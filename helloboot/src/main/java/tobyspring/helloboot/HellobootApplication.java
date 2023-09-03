@@ -1,5 +1,13 @@
 package tobyspring.helloboot;
 
+
+import java.io.IOException;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
@@ -9,8 +17,19 @@ public class HellobootApplication {
 	public static void main(String[] args) {
 		ServletWebServerFactory serverFactory =  new TomcatServletWebServerFactory();
 		// getWebServer : servlet 컨테이너를 만드는 생성 함수
-		WebServer webServer = serverFactory.getWebServer();
-		// Tomcat servler 컨테이너 동작
+		// ServletContextInitializer : selvlet 컨테이너에 servlet 연결 
+		WebServer webServer = serverFactory.getWebServer(servletContext -> {
+			servletContext.addServlet("hello", new HttpServlet() {
+				@Override
+				protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+					resp.setStatus(200);
+					resp.setHeader("Content-Type", "text/plain");
+					resp.getWriter().println("Hello Servlet");
+				}
+			}).addMapping("/hello");
+		});
+		
+		// Tomcat servlet 컨테이너 동작
 		webServer.start();
 	}
 
