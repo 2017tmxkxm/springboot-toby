@@ -3,7 +3,6 @@ package tobyspring.helloboot;
 
 import java.io.IOException;
 
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -24,6 +23,8 @@ public class HellobootApplication {
 		// getWebServer : servlet 컨테이너를 만드는 생성 함수
 		// ServletContextInitializer : selvlet 컨테이너에 servlet 연결 
 		WebServer webServer = serverFactory.getWebServer(servletContext -> {
+			HelloController helloController = new HelloController();
+			
 			servletContext.addServlet("frontController", new HttpServlet() {
 				@Override
 				protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -31,9 +32,11 @@ public class HellobootApplication {
 					if(req.getRequestURI().equals("/hello") && req.getMethod().equals(HttpMethod.GET.name())) {
 						String name = req.getParameter("name");
 						
+						String ret = helloController.hello(name);
+						
 						resp.setStatus(HttpStatus.OK.value());
 						resp.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN_VALUE);
-						resp.getWriter().println("Hello " + name);
+						resp.getWriter().println(ret);
 					} else if (req.getRequestURI().equals("/user")) {
 						
 					} else {
