@@ -24,30 +24,7 @@ public class HellobootApplication {
 	}
 	
 	public static void main(String[] args) {
-		// AnnotationConfigWebApplicationContext : @Bean을 인식하기 위해 변경
-		// 스프링 컨테이너 생성, DispatcherServlet은 GenericWebApplicationContext를 사용
-		// 서블릿 컨테이너 초기화 작업을 스프링 컨테이너 초기화 작업에 종속
-		AnnotationConfigWebApplicationContext applicationContext = new AnnotationConfigWebApplicationContext() {
-			@Override
-			protected void onRefresh() {
-				super.onRefresh();
-				
-				ServletWebServerFactory serverFactory =  this.getBean(ServletWebServerFactory.class);
-				DispatcherServlet dispatcherServlet = this.getBean(DispatcherServlet.class);
-				
-				// DispatcherServlet 등록
-				WebServer webServer = serverFactory.getWebServer(servletContext -> {
-					servletContext.addServlet("dispatcherServlet", dispatcherServlet).addMapping("/*");
-				});
-				
-				// Tomcat servlet 컨테이너 동작
-				webServer.start();
-			}
-		};
-		
-		applicationContext.register(HellobootApplication.class);
-		applicationContext.refresh();
-		
+		MySpringApplication.run(HellobootApplication.class, args);
 	}
-
+	
 }
