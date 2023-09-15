@@ -13,6 +13,16 @@ import org.springframework.web.servlet.DispatcherServlet;
 @ComponentScan
 public class HellobootApplication {
 	
+	@Bean
+	public ServletWebServerFactory servletWebServerFactory() {
+		return new TomcatServletWebServerFactory();
+	}
+	
+	@Bean
+	public DispatcherServlet dispatcherServlet() {
+		return new DispatcherServlet();
+	}
+	
 	public static void main(String[] args) {
 		// AnnotationConfigWebApplicationContext : @Bean을 인식하기 위해 변경
 		// 스프링 컨테이너 생성, DispatcherServlet은 GenericWebApplicationContext를 사용
@@ -22,12 +32,12 @@ public class HellobootApplication {
 			protected void onRefresh() {
 				super.onRefresh();
 				
-				// 서블릿 등록
-				ServletWebServerFactory serverFactory =  new TomcatServletWebServerFactory();
-				// getWebServer : servlet 컨테이너를 만드는 생성 함수
-				// ServletContextInitializer : selvlet 컨테이너에 servlet 연결 
+				ServletWebServerFactory serverFactory =  this.getBean(ServletWebServerFactory.class);
+				DispatcherServlet dispatcherServlet = this.getBean(DispatcherServlet.class);
+				
+				// DispatcherServlet 등록
 				WebServer webServer = serverFactory.getWebServer(servletContext -> {
-					servletContext.addServlet("dispatcherServlet", new DispatcherServlet(this)).addMapping("/*");
+					servletContext.addServlet("dispatcherServlet", dispatcherServlet).addMapping("/*");
 				});
 				
 				// Tomcat servlet 컨테이너 동작
